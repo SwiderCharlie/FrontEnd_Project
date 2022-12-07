@@ -637,9 +637,9 @@ export default {
     },
     // 退出登录
     logout() {
-      this.isLogin = false;
-      this.isShowUserBox = false;
-    }
+      this.isLogin = false
+      this.isShowUserBox = false
+    },
   },
 }
 </script>

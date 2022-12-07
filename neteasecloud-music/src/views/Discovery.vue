@@ -1,5 +1,7 @@
 <template>
-  <div>Discovery</div>
+  <div>
+    discovery
+  </div>
 </template>
 
 <script>

@@ -2,6 +2,7 @@
   <div id="app">
     <Header/>
     <router-view></router-view>
+    <GotoTop/>
     <Music/>
     <Footer/>
   </div>
