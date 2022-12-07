@@ -8,18 +8,6 @@ const instance = axios.create({
 
 // 请求拦截器
 instance.interceptors.request.use((config) => {
-  // 添加时间戳
-  if (config.method === 'post') {
-    config.data = {
-      ...config.data,
-      _t: Date.parse(new Date()) / 1000
-    };
-  } else if (config.method === 'get') {
-    config.params = {
-      ...config.params,
-      _t: Date.parse(new Date()) / 1000
-    };
-  }
   return config;
 }, (error) => {
   return Promise.reject(error);

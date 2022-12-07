@@ -138,6 +138,7 @@
               >{{ musicList.length }}</a
             >
           </span>
+          <!-- 播放列表 -->
           <div class="list" v-show="isShowList">
             <div class="list-hd">
               <h4>播放列表({{ this.musicList.length }})</h4>
@@ -245,7 +246,7 @@ export default {
       loopMode: 0, // 循环模式：0循环，1随机，2单曲循环
       volumeHeight: 60, //当前设置音量百分比
       timer: null, // 定时器
-      isShowList: true, // 是否展示播放列表
+      isShowList: false, // 是否展示播放列表
       currentLyric: {}, // 歌词
       curIndex: 0, // 当前播放歌曲在播放队列中的序号
       lyricIndex: 0, // 当前播放歌词序号
