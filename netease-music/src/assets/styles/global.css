@@ -1,0 +1,37 @@
+.wrap-header {
+  width: 1100px;
+  min-width: 1100px;
+  margin: 0 auto;
+}
+.wrap-content {
+  width: 980px;
+  min-width: 980px;
+  margin: 0 auto;
+}
+.ellipsis {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.ellipsis-2 {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+.ellipsis-3 {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+}
+.clearfix::after {
+  content: '';
+  clear: both;
+  display: block;
+}
+.clearfix {
+  *zoom: 1;
+}
