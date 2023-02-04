@@ -3,11 +3,11 @@
     <div class="title"><h3>我的歌手（{{count}}）</h3></div>
     <div class="artist-list">
       <div class="item clearfix" v-for="item in artistList" :key="item.id">
-        <a href="javascript:;" class="cover">
+        <router-link :to="{path:'/artist',query:{id:`${item.id}`}}" class="cover">
           <img v-lazy="item.picUrl" alt="">
-        </a>
+        </router-link>
         <div class="cnt">
-          <h4>{{item.name}}</h4>
+          <h4><router-link :to="{path:'/artist',query:{id:`${item.id}`}}">{{item.name}}</router-link></h4>
           <p>{{item.albumSize}}个专辑&nbsp;&nbsp;&nbsp;&nbsp;{{item.mvSize}}个MV</p>
         </div>
       </div>

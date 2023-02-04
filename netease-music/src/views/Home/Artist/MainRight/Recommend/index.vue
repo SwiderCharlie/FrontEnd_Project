@@ -10,18 +10,18 @@
         <li class="singer" v-for="item in artist1" :key="item.id">
           <div class="cover">
             <img v-lazy="item.img1v1Url" />
-            <a
-              href="javascript:;"
+            <router-link
+               :to="{path:'/artist',query:{id:`${item.id}`}}"
               class="mask"
               :title="item.name + '的音乐'"
-            ></a>
+            ></router-link>
           </div>
           <p class="dec">
-            <a
-              href="javascript:;"
+            <router-link
+               :to="{path:'/artist',query:{id:`${item.id}`}}"
               class="clearfix"
               :title="item.name + '的音乐'"
-              >{{ item.name }}</a
+              >{{ item.name }}</router-link
             >
             <i class="pointer"></i>
           </p>
@@ -38,18 +38,18 @@
         <li class="singer" v-for="item in artist2" :key="item.id">
           <div class="cover">
             <img v-lazy="item.img1v1Url" />
-            <a
-              href="javascript:;"
+            <router-link
+               :to="{path:'/artist',query:{id:`${item.id}`}}"
               class="mask"
               :title="item.name + '的音乐'"
-            ></a>
+            ></router-link>
           </div>
           <p class="dec">
-            <a
-              href="javascript:;"
+            <router-link
+               :to="{path:'/artist',query:{id:`${item.id}`}}"
               class="clearfix"
               :title="item.name + '的音乐'"
-              >{{ item.name }}</a
+              >{{ item.name }}</router-link
             >
             <i class="pointer"></i>
           </p>
@@ -60,7 +60,7 @@
     <!-- 其他热门歌手 -->
     <ul class="other clearfix">
       <li class="sml" v-for="item in artist3" :key="item.id">
-        <a href="javascript:;" :title="item.name + '的音乐'" class="ellipsis">{{ item.name }}</a>
+        <router-link :to="{path:'/artist',query:{id:`${item.id}`}}" :title="item.name + '的音乐'" class="ellipsis">{{ item.name }}</router-link>
         &nbsp;
         <i class="pointer"></i>
       </li>

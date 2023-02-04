@@ -48,13 +48,13 @@
           <!-- 标题 -->
           <td>
             <div class="tt">
-              <a href="javascript:;" v-if="index < 3">
+              <router-link :to="{path: '/song', query: {id: `${item.id}`}}" v-if="index < 3">
                 <img v-lazy="item.al.picUrl" class="rpic" />
-              </a>
-              <span class="play" :class="[index < 3 ? 'top3' : '']"></span>
+              </router-link>
+              <span class="play" :class="[index < 3 ? 'top3' : '']" @click="playMusic(item.id)"></span>
               <div class="ttc" :class="[index < 3 ? 'top3' : '']">
                 <span class="txt ellipsis">
-                  <a href="javascript:;" class="song-name">{{ item.name }}</a>
+                  <router-link :to="{path: '/song', query: {id: `${item.id}`}}" class="song-name">{{ item.name }}</router-link>
                   <span class="ailas" v-if="item.alia.length"
                     >- ({{ item.alia[0] }})</span
                   >
@@ -67,7 +67,7 @@
           <td>
             <div class="dur">{{ toTime(item.dt) }}</div>
             <div class="show">
-              <a href="javascript:;" title="添加到播放列表" class="a1"></a>
+              <a href="javascript:;" title="添加到播放列表" class="a1" @click="$store.dispatch('music/addMusic', item.id)"></a>
               <a href="javascript:;" title="收藏" class="a2"></a>
               <a href="javascript:;" title="分享" class="a3"></a>
               <a href="javascript:;" title="下载" class="a4"></a>
@@ -77,9 +77,11 @@
           <!-- 歌手 -->
           <td>
             <div class="artists ellipsis">
-              <a href="javascript:;" v-for="(artist, index) in item.ar" :key="artist.id">
-                {{artist.name}}<span v-if="index < item.ar.length - 1">/</span>
-                </a>
+              <span class="ar" v-for="(artist, index) in item.ar"
+                :key="artist.id">
+                <router-link :to="{path:'/artist',query:{id:`${artist.id}`}}" :title="artist.name">{{artist.name}}</router-link>
+                <span v-if="index < item.ar.length - 1">/</span>
+                </span>
             </div>
           </td>
         </tr>
@@ -120,6 +122,13 @@ export default {
       let m = Math.floor(ms / 1000 / 60)
       let s = Math.floor(ms / 1000 - m * 60)
       return (m >= 10 ? m : '0' + m) + ':' + (s >= 10 ? s : '0' + s)
+    },
+    
+    // 播放歌曲
+    async playMusic(id) {
+      await this.$store.dispatch('music/setMusicNow', id)
+      await this.$store.dispatch('music/addMusic', id)
+      this.$bus.$emit('play')
     },
   },
 }

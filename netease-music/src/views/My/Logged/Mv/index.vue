@@ -18,7 +18,7 @@
         </h4>
         <h5 class="artist ellipsis">
           <span v-for="(ar, index) in item.creator" :key="ar.userId">
-            <a href="javascript:;" class="ar" :title="ar.userName">{{ar.userName}}</a>
+            <router-link :to="{path:'/artist',query:{id:`${ar.userId}`}}" class="ar" :title="ar.userName">{{ar.userName}}</router-link>
             <span v-if="index < item.creator.length - 1" class="line"> / </span>
           </span>
         </h5>

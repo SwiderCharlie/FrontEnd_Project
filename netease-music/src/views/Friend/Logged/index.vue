@@ -57,8 +57,10 @@
                 <a href="javascript:;" class="ply"></a>
               </div>
               <div class="song-cnt">
-                <h3 class="tit ellipsis">{{item.song.name}}</h3>
-                <h4 class="from ellipsis">{{item.song.artist}}</h4>
+                <h3 class="tit ellipsis"><router-link :to="{path: '/song', query: {id: `${item.song.id}`}}">{{item.song.name}}</router-link></h3>
+                <h4 class="from ellipsis">
+                  <router-link :to="{path: '/artist', query:{id: `${item.song.artist.id}`}}">{{item.song.artist.name}}</router-link>
+                </h4>
               </div>
             </div>
             <!-- 图片 -->
@@ -173,9 +175,11 @@ export default {
         if (item.data.song) {
           eventItem.song = {}
           eventItem.song.coverUrl = item.data.song.album.blurPicUrl // 封面
-          eventItem.song.id = item.data.song.id // id
+          eventItem.song.id = item.data.song.id // 歌曲id
           eventItem.song.name = item.data.song.name // 歌曲名
-          eventItem.song.artist = item.data.song.artists[0].name // 歌手名
+          eventItem.song.artist = {}
+          eventItem.song.artist.name = item.data.song.artists[0].name // 歌手名
+          eventItem.song.artist.id = item.data.song.artists[0].id  // 歌手id
         }
         // 动态中的视频
         if (item.data.mv) {

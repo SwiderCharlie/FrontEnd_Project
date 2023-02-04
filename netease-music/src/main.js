@@ -16,7 +16,7 @@ Vue.use(ElementUI)
 
 // 图片懒加载
 Vue.use(VueLazyload, {
-  loading: require('@/assets/images/loading.gif')  // 加载时默认显示的图片
+  loading: require('@/assets/images/loading.gif'),  // 加载时默认显示的图片
 })
 
 // 将api.js中的所有接口方法绑定到Vue实例原型对象上

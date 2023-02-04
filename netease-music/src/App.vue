@@ -35,7 +35,7 @@ export default {
 
   watch: {
     path() {
-      if (this.$route.path.indexOf('/my') !== -1) this.isShowFooter = false
+      if (this.$route.path.indexOf('/my') !== -1 && localStorage.getItem('COOKIE')) this.isShowFooter = false
       else this.isShowFooter = true
     }
   }

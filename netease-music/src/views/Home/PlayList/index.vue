@@ -99,9 +99,9 @@
       <li v-for="item in playlists" :key="item.id">
         <div class="cover">
           <img v-lazy="item.coverImgUrl" />
-          <a href="javascript:;" class="mask" :title="item.name"></a>
+          <router-link :to="{path:'/playlist',query:{id:`${item.id}`}}" class="mask" :title="item.name"></router-link>
           <div class="bottom">
-            <a href="javascript:;" class="icn-play" title="播放"></a>
+            <a href="javascript:;" class="icn-play" title="播放" @click="setPlaylist(item.id)"></a>
             <span class="icn-headset"></span>
             <span class="nb">{{
               item.playCount >= 10000
@@ -111,9 +111,9 @@
           </div>
         </div>
         <p class="dec">
-          <a href="javascript:;" :title="item.name" class="title ellipsis">{{
+          <router-link :to="{path:'/playlist',query:{id:`${item.id}`}}" :title="item.name" class="title ellipsis">{{
             item.name
-          }}</a>
+          }}</router-link>
         </p>
         <p class="creator">
           <span class="by">by</span>&nbsp;
@@ -199,7 +199,20 @@ export default {
       this.category = cat
       this.getPlayLists()
       this.isShowList = false
-    }
+    },
+
+    // 播放歌单
+    async setPlaylist(id) {
+      let result = await this.$api.reqPlayList(id, localStorage.getItem('CCOKIE'))
+      let ids = [];
+      result.playlist.trackIds.forEach(item => {
+        ids.push(item.id)
+      })
+      await this.$store.dispatch('music/setMusicNow', ids[0])
+      ids = ids.join(',')
+      await this.$store.dispatch('music/setMusicList', ids)
+      this.$bus.$emit('play')
+    },
   },
 }
 </script>

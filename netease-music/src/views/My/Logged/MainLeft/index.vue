@@ -53,9 +53,7 @@
             :key="item.id"
             @click="gotoPlaylist(item.id)"
             :class="[
-              $route.query.id && $route.query.id == item.id
-                ? 'selected'
-                : '',
+              $route.query.id && $route.query.id == item.id ? 'selected' : '',
             ]"
           >
             <a href="javascript:;" class="atar">
@@ -97,7 +95,9 @@
             v-for="item in subPlaylists"
             :key="item.id"
             @click="gotoPlaylist(item.id)"
-            :class="[$route.query.id && $route.query.id == item.id? 'selected': '']"
+            :class="[
+              $route.query.id && $route.query.id == item.id ? 'selected' : '',
+            ]"
           >
             <a href="javascript:;" class="atar">
               <img v-lazy="item.coverImgUrl" alt="" />
@@ -109,7 +109,11 @@
               </p>
             </div>
             <div class="btns">
-              <a href="javascript:;" class="del-icon"></a>
+              <a
+                href="javascript:;"
+                class="del-icon"
+                @click.stop="unsubscribe(item.id)"
+              ></a>
             </div>
           </li>
         </ul>
@@ -134,6 +138,11 @@ export default {
       isShowSubPlaylist: true, // 是否展开收藏的歌单列表
     }
   },
+  computed: {
+    id() {
+      return this.$route.query.id
+    },
+  },
 
   mounted() {
     this.getSubCount()
@@ -154,6 +163,8 @@ export default {
 
     // 获取用户创建和收藏的歌单
     async getUserPlaylist() {
+      this.createdPlaylists = []
+      this.subPlaylists = []
       let uid = this.$store.state.user.userId
       let cookie = this.$store.state.user.cookie
       let result = await this.$api.reqUserPlaylist(uid, cookie)
@@ -168,11 +179,10 @@ export default {
       })
       if (this.$route.path === '/my/playlist' && !this.$route.query.id) {
         this.$router.push({
-        path: '/my/playlist',
-        query: { id: this.createdPlaylists[0].id }
-      })
+          path: '/my/playlist',
+          query: { id: this.createdPlaylists[0].id },
+        })
       }
-      
     },
 
     // 跳转到我的歌手
@@ -203,6 +213,28 @@ export default {
         query: {
           id: pid,
         },
+      })
+    },
+
+    // 取消订阅歌单
+    unsubscribe(id) {
+      this.$confirm('确定删除歌单？', '提示', {
+        confirmButtonText: '确认',
+        cancelButtonText: '取消',
+        type: 'warning',
+      }).then(async () => {
+        let cookie = localStorage.getItem('COOKIE')
+        if (this.id == id) {
+          await this.$api.subscribePlaylist(2, id, cookie)
+          this.$router.replace({
+            query: {
+              id: this.createdPlaylists[0].id,
+            },
+          })
+        } else {
+          await this.$api.subscribePlaylist(2, id, cookie)
+        }
+        this.getUserPlaylist()
       })
     },
   },

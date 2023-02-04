@@ -1,26 +1,26 @@
 <template>
   <div class="left-content">
     <!-- 热门推荐 -->
-    <Title :title="'热门推荐'" :showNav="true" />
+    <Title :title="'热门推荐'" :showNav="true" :type="'playlist'" />
     <ul class="recommend clearfix">
       <li v-for="item in recommendList" :key="item.id">
         <div class="cover">
           <img v-lazy="item.coverUrl" />
-          <a href="javascript:;" class="msk ellipsis-2" :title="item.name"></a>
+          <router-link :to="{path:'/playlist',query:{id:`${item.id}`}}" class="msk ellipsis-2" :title="item.name"></router-link>
           <div class="bottom">
-            <a href="javascript:;" class="icn-play"></a>
+            <a href="javascript:;" class="icn-play" @click="setPlaylist(item.id)"></a>
             <span class="icn-headset"></span>
             <span class="count">{{ Math.floor(item.count / 10000) }}万</span>
           </div>
         </div>
         <p class="dec">
-          <a href="javascript:;">{{ item.name }}</a>
+          <router-link :to="{path:'/playlist',query:{id:`${item.id}`}}">{{ item.name }}</router-link>
         </p>
       </li>
     </ul>
 
     <!-- 新碟上架 -->
-    <Title :title="'新碟上架'" :showNav="false" />
+    <Title :title="'新碟上架'" :showNav="false" :type="'album'" />
     <div class="albums">
       <div class="inner">
         <!-- 向左翻页 -->
@@ -30,13 +30,13 @@
             <li v-for="(item, index) in newAlbumsList" :key="index">
               <div class="album-cover">
                 <img :src="item.picUrl" alt="" />
-                <a href="javascript:;" :title="item.name" class="cover"></a>
+                <router-link :to="{path: '/album', query:{id: `${item.id}`}}" :title="item.name" class="cover"></router-link>
               </div>
               <p>
-                <a href="javascript:;" class="name ellipsis">{{ item.name }}</a>
+                <router-link :to="{path: '/album', query: {id: `${item.id}`}}" class="name ellipsis">{{ item.name }}</router-link>
               </p>
               <p>
-                <a href="javascript:;" class="name ellipsis">{{ item.artist.name }}</a>
+                <router-link :to="{path: '/artist', query: {id: `${item.artist.id}`}}" class="name ellipsis">{{ item.artist.name }}</router-link>
               </p>
             </li>
           </ul>
@@ -47,19 +47,21 @@
     </div>
 
     <!-- 榜单 -->
-    <Title :title="'榜单'" :showNav="false" />
+    <Title :title="'榜单'" :showNav="false" :type="'toplist'" />
     <div class="top-list">
-      <dl class="blk" v-for="(list, index) in billList" :key="index">
+      <dl class="blk" v-for="list in billList" :key="list.id">
         <dt class="top">
           <div class="top-cover">
+            <router-link :to="{path: '/home/toplist', query: {id: `${list.id}`}}">
             <img v-lazy="list.coverUrl" alt="" />
+            </router-link>
           </div>
           <div class="tit">
-            <a href="javascript:;"
-              ><h3>{{ list.name }}</h3></a
+            <router-link :to="{path: '/home/toplist', query: {id: `${list.id}`}}"
+              ><h3>{{ list.name }}</h3></router-link
             >
             <div class="btn">
-              <a href="javascript:;" title="播放" class="play"></a>
+              <a href="javascript:;" title="播放" class="play" @click="setPlaylist(list.id)"></a>
               <a href="javascript:;" title="收藏" class="star"></a>
             </div>
           </div>
@@ -70,12 +72,12 @@
               <span class="number" :class="[idx < 3 ? 'top' : '']">{{
                 idx + 1
               }}</span>
-              <a href="javascipt:;" class="song-name ellipsis">{{
+              <router-link :to="{path: '/song', query: {id: `${item.id}`}}" class="song-name ellipsis">{{
                 item.name
-              }}</a>
+              }}</router-link>
               <div class="line-btn">
-                <a href="javascript:;" class="play" title="播放"></a>
-                <a href="javascript:;" class="add" title="添加到播放列表"></a>
+                <a href="javascript:;" class="play" title="播放" @click="playMusic(item.id)"></a>
+                <a href="javascript:;" class="add" title="添加到播放列表" @click="$store.dispatch('music/addMusic', item.id)"></a>
                 <a href="javascript:;" class="star" title="收藏"></a>
               </div>
             </li>
@@ -108,6 +110,7 @@ export default {
       ],
     }
   },
+
   mounted() {
     // 获取热门推荐列表
     this.getRecommendList()
@@ -116,6 +119,7 @@ export default {
     // 获取所有榜单列表
     this.getTopList()
   },
+
   methods: {
     // 获取热门推荐列表
     async getRecommendList() {
@@ -138,7 +142,7 @@ export default {
           name: item.name,
           id: item.id,
           picUrl: item.picUrl,
-          artist: { name: item.artist.name, id: item.artist.name },
+          artist: { name: item.artist.name, id: item.artist.id },
         })
       })
       this.newAlbumsList = this.newAlbumsList.slice(0, 10)
@@ -201,6 +205,26 @@ export default {
           })
         })
       })
+    },
+
+    // 播放歌单
+    async setPlaylist(id) {
+      let result = await this.$api.reqPlayList(id, localStorage.getItem('CCOKIE'))
+      let ids = [];
+      result.playlist.trackIds.forEach(item => {
+        ids.push(item.id)
+      })
+      await this.$store.dispatch('music/setMusicNow', ids[0])
+      ids = ids.join(',')
+      await this.$store.dispatch('music/setMusicList', ids)
+      this.$bus.$emit('play')
+    },
+
+    // 播放歌曲
+    async playMusic(id) {
+      await this.$store.dispatch('music/setMusicNow', id)
+      await this.$store.dispatch('music/addMusic', id)
+      this.$bus.$emit('play')
     },
   },
 }

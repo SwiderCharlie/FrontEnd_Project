@@ -1,5 +1,5 @@
 <template>
-  <div class="playlist">
+  <div class="mainleft">
     <!-- 歌单信息 -->
     <div class="title clearfix">
       <div class="cover">
@@ -25,11 +25,11 @@
           >
         </div>
         <div class="btns">
-          <a href="javascript:;" class="play" @click="setPlaylist()">
+          <a href="javascript:;" class="play" @click="setPlaylist">
             <i> <em class="ply-icn"></em>播放 </i>
           </a>
           <a href="javascript:;" class="add"></a>
-          <a href="javascript:;" class="subscribe disabled">
+          <a href="javascript:;" class="subscribe"  :class="[playlistInfo.subscribed ? 'disabled': '']" @click="subscribe">
             <i
               >({{
                 playlistInfo.subscribedCount > 0
@@ -99,6 +99,10 @@
       <span class="more">
         播放：<strong>{{ playlistInfo.playCount }}</strong> 次
       </span>
+      <span class="out">
+        <i></i>
+        <a href="javascript:;" class="outchain">生成外链播放器</a>
+      </span>
     </div>
 
     <!-- 歌单 -->
@@ -131,11 +135,10 @@
             <div class="tt">
               <div class="ttc">
                 <span class="txt ellipsis">
-                  <router-link :to="{path: '/song', query: {id: `${item.id}`}}" class="song-name" :title="item.name">{{ item.name }}</router-link>
+                  <router-link :to="{path: '/song', query: {id: `${item.id}`}}" class="song-name">{{ item.name }}</router-link>
                   <span class="ailas" v-if="item.alia.length"
                     >- ({{ item.alia[0] }})</span
                   >
-                  <span class="mv" title="播放MV" v-if="item.mv != '0'"></span>
                 </span>
               </div>
             </div>
@@ -155,39 +158,51 @@
           <!-- 歌手 -->
           <td>
             <div class="artists ellipsis">
-              <span class="ar" v-for="(artist, index) in item.ar"
-                :key="artist.id">
-                <router-link :to="{path:'/artist',query:{id:`${artist.id}`}}" :title="artist.name">{{artist.name}}</router-link>
-                <span v-if="index < item.ar.length - 1">/</span>
-                </span>
+              <a
+                href="javascript:;"
+                v-for="(artist, index) in item.ar"
+                :key="artist.id"
+              >
+                {{ artist.name
+                }}<span v-if="index < item.ar.length - 1">/</span>
+              </a>
             </div>
           </td>
 
           <!-- 专辑 -->
           <td>
             <div class="album ellipsis">
-              <router-link :to="{path: '/album', query:{id: `${item.al.id}`}}" :title="item.al.name">{{ item.al.name }}</router-link>
+              <router-link  :to="{path: '/album', query:{id: `${item.al.id}`}}">{{ item.al.name }}</router-link>
             </div>
           </td>
         </tr>
       </tbody>
     </table>
+
+    <!-- 查看更多 -->
+    <div class="see-more">
+      <div class="text">查看更多内容，请下载客户端</div>
+      <a href="https://music.163.com/#/download" class="button" target="_blank">立即下载</a>
+    </div>
+
     <!-- 评论 -->
-    <Comments />
+    <Comments class="comments"/>
   </div>
 </template>
 
 <script>
 import Comments from '@/views/Home/TopList/MainRight/Comments.vue'
+
 export default {
-  name: 'PlayList',
-  components: { Comments },
+  name: 'MainLeft',
   data() {
     return {
       playlistInfo: {}, // 歌单信息
       isUnfold: false, // 歌单介绍信息是否展开
     }
   },
+
+  components: { Comments },
 
   computed: {
     id() {
@@ -235,7 +250,24 @@ export default {
       return (m >= 10 ? m : '0' + m) + ':' + (s >= 10 ? s : '0' + s)
     },
 
-     // 播放歌单
+    // 订阅歌单
+    async subscribe() {
+      if (this.playlistInfo.subscribed) return
+      let cookie = localStorage.getItem('COOKIE')
+      if (cookie) {
+        let result = await this.$api.subscribePlaylist(1, this.id, cookie)
+        if (result.code === 200) {
+        this.playlistInfo.subscribed = true
+        this.$message.success('收藏成功')
+        } else {
+          this.$message.error('收藏失败')
+        }
+      } else {
+        this.$bus.$emit('appear')
+      }
+    },
+
+    // 播放歌单
     async setPlaylist() {
       let ids = [];
       this.playlistInfo.trackIds.forEach(item => {
@@ -258,14 +290,12 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.playlist {
-  margin-left: 239px;
-  min-height: 900px;
-  width: 741px;
-  border-left: 1px solid #d3d3d3;
-  background-color: #fff;
+.mainleft {
+  float: left;
+  width: 710px;
+  border-right: 1px solid #d3d3d3;
+  padding: 47px 30px 40px 39px;
   .title {
-    padding: 40px;
     .cover {
       float: left;
       position: relative;
@@ -382,7 +412,7 @@ export default {
           margin-right: 6px;
           background: url('@/assets/images/btnBg.png') right -1020px no-repeat;
           i {
-             float: left;
+            float: left;
             height: 31px;
             line-height: 30px;
             min-width: 23px;
@@ -515,8 +545,9 @@ export default {
     }
   }
   .list-tit {
-    padding: 0 10px 0 32px;
+    padding: 0 10px 0 0;
     height: 35px;
+    margin-top: 27px;
     border-bottom: 2px solid #c20c0c;
     h3 {
       float: left;
@@ -537,12 +568,30 @@ export default {
         color: #c20c0c;
       }
     }
+    .out {
+      margin-right: 20px;
+      margin-top: 5px;
+      float: right;
+      i {
+        float: left;
+        width: 16px;
+        height: 16px;
+        overflow: hidden;
+        vertical-align: middle;
+        background: url('@/assets/images/icon.png') -34px -863px no-repeat;
+      }
+      .outchain {
+        color: #4996d1;
+        text-decoration: underline;
+      }
+    }
   }
   .list {
     width: 100%;
     border-collapse: collapse;
     border-spacing: 0;
     table-layout: fixed;
+    border: 1px solid #d9d9d9;
     thead {
       th {
         height: 38px;
@@ -616,28 +665,14 @@ export default {
               margin-right: 20px;
               overflow: hidden;
               .txt {
-                position: relative;
                 display: inline-block;
                 max-width: 99%;
                 height: 20px;
-                padding-right: 25px;
-                margin-right: -25px;
                 .song-name:hover {
                   text-decoration: underline;
                 }
                 .ailas {
                   color: #aeaeae;
-                }
-                .mv {
-                  float: left;
-                  position: absolute;
-                  top: 0;
-                  right: 0;
-                  width: 23px;
-                  height: 17px;
-                  margin-top: 1px;
-                  cursor: pointer;
-                  background: url('@/assets/images/table.png') 0 -151px no-repeat;
                 }
               }
             }
@@ -704,6 +739,33 @@ export default {
         }
       }
     }
+  }
+  .see-more {
+    width: 100%;
+    height: 66px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-direction: column;
+    margin-top: 30px;
+    margin-bottom: -10px;
+    .text {
+      font-size: 13px;
+      color: #333;
+    }
+    .button {
+    width: 120px;
+    height: 30px;
+    background-image: linear-gradient(90deg,#ff5a4c 0%,#ff1d12 100%);
+    border-radius: 18px;
+    line-height: 30px;
+    font-size: 12px;
+    color: #ffffff;
+    text-align: center;
+    }
+  }
+  .comments {
+     margin: 0 -30px 0 -40px;
   }
 }
 </style>

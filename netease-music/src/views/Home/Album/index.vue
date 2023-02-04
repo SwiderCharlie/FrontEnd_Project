@@ -8,15 +8,15 @@
       <li class="al-item" v-for="item in hotAlbums" :key="item.id">
         <div class="cover">
           <img v-lazy="item.picUrl">
-          <a href="javascript:;" class="mask" :title="item.name"></a>
-          <a href="javascript;;" class="icn-play"></a>
+          <router-link :to="{path: '/album', query:{id: `${item.id}`}}" class="mask" :title="item.name"></router-link>
+          <a href="javascript:;" class="icn-play" @click="setAlbum(item.id)"></a>
         </div>
         <p class="dec">
-          <a href="javascript:;" class="title ellipsis" :title="item.name">{{item.name}}</a>
+          <router-link  :to="{path: '/album', query:{id: `${item.id}`}}" class="title ellipsis" :title="item.name">{{item.name}}</router-link>
         </p>
         <p class="artist ellipsis">
           <span class="ar" v-for="(ar, index) in item.artists" :key="ar.id">
-            <a href="javascript:;" :title="ar.name">{{ar.name}}</a>
+            <router-link :to="{path:'/artist',query:{id:`${ar.id}`}}" :title="ar.name">{{ar.name}}</router-link>
             <span v-if="index < item.artists.length - 1">&nbsp;/&nbsp;</span>
           </span>
         </p>
@@ -37,15 +37,15 @@
       <li class="al-item" v-for="item in allAlbums" :key="item.id">
         <div class="cover">
           <img v-lazy="item.picUrl">
-          <a href="javascript:;" class="mask" :title="item.name"></a>
-          <a href="javascript:;" class="icn-play"></a>
+          <router-link  :to="{path: '/album', query:{id: `${item.id}`}}" class="mask" :title="item.name"></router-link>
+          <a href="javascript:;" class="icn-play" @click="setAlbum(item.id)"></a>
         </div>
         <p class="dec">
-          <a href="javascript:;" class="title ellipsis" :title="item.name">{{item.name}}</a>
+          <router-link  :to="{path: '/album', query:{id: `${item.id}`}}" class="title ellipsis" :title="item.name">{{item.name}}</router-link>
         </p>
         <p class="artist ellipsis">
           <span class="ar" v-for="(ar, index) in item.artists" :key="ar.id">
-            <a href="javascript:;" :title="ar.name">{{ar.name}}</a>
+            <router-link :to="{path:'/artist',query:{id:`${ar.id}`}}" :title="ar.name">{{ar.name}}</router-link>
             <span v-if="index < item.artists.length - 1">&nbsp;/&nbsp;</span>
           </span>
         </p>
@@ -110,6 +110,19 @@ export default {
     getPageNo(pageNo) {
       this.pageNo = pageNo
       this.getAllAlbums()
+    },
+
+    // 播放专辑
+    async setAlbum(id) {
+      let result = await this.$api.reqAlbum(id)
+      let ids = [];
+      result.songs.forEach(item => {
+        ids.push(item.id)
+      })
+      await this.$store.dispatch('music/setMusicNow', ids[0])
+      ids = ids.join(',')
+      await this.$store.dispatch('music/setMusicList', ids)
+      this.$bus.$emit('play')
     }
   }
 }

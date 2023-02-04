@@ -165,9 +165,9 @@
                 </div>
                 <ul class="music-list" v-else>
                   <li
-                    v-for="item in musicList"
+                    v-for="(item, index) in musicList"
                     :key="item.id"
-                    @dblclick="dbMusic(item.id)"
+                    @dblclick="dbMusic(item.id, index)"
                   >
                     <div class="col col1">
                       <i class="playicn" v-show="musicNow.id === item.id"></i>
@@ -252,6 +252,7 @@ export default {
       lyricIndex: 0, // 当前播放歌词序号
     }
   },
+  
   computed: {
     // 当前播放歌曲
     musicNow() {
@@ -262,10 +263,12 @@ export default {
       return this.$store.state.music.musicList
     },
   },
+
   created() {
     this.$store.dispatch('music/getMusicNow') // 从本地获取当前播放歌曲
     this.$store.dispatch('music/getMusicList') // 从本地获取播放列表
   },
+
   watch: {
     // 当前播放歌曲
     musicNow() {
@@ -277,13 +280,22 @@ export default {
         this.init().then(() => {
           if (this.play) this.playMusic()
         })
+        this.curIndex = localStorage.getItem('MUSICLIST').split(',').indexOf((this.musicId.toString()))
       }
     },
+
     // 当前播放的歌词序号
     lyricIndex() {
       this.$refs.lyric.scrollTop = (this.lyricIndex - 3) * 32
     },
   },
+
+  mounted() {
+    this.$bus.$on('play', () => {
+      this.playMusic()
+    })
+  },
+
   methods: {
     // 展示音乐播放器
     show() {
@@ -436,8 +448,9 @@ export default {
       this.$store.dispatch('music/setMusicNow', id)
     },
     // 双击歌曲播放
-    dbMusic(id) {
+    dbMusic(id, index) {
       this.play = true
+      this.curIndex = index
       this.setMusic(id)
     },
     // 双击歌词跳转播放位置

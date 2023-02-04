@@ -101,8 +101,7 @@ export default {
 
   computed: {
     id() {
-      if (!this.$route.query.id) return '19723756'
-      else return this.$route.query.id
+      return this.$route.query.id
     },
   },
 
@@ -124,20 +123,21 @@ export default {
   methods: {
     // 获取评论
     async getCommentsList() {
-      let result = await this.$api.reqPlayListComments(
+      let result = await this.$api.reqSongComments(
         this.id,
         this.pageSize,
         (this.pageNo - 1) * this.pageSize
       )
       this.tolComments = result.total
       this.commentsList = result.comments
+      this.$emit('getCommentsCount', this.tolComments)
     },
 
     // 获取当前页数
     getPageNo(pageNo) {
       this.pageNo = pageNo
       this.getCommentsList()
-    }
+    },
   },
 }
 </script>
@@ -145,7 +145,6 @@ export default {
 <style lang="less" scoped>
 .comments {
   margin-top: 40px;
-  padding: 0 30px 0 40px;
   .title {
     height: 35px;
     border-bottom: 2px solid #c20c0c;

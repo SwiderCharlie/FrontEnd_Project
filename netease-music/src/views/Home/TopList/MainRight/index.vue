@@ -23,7 +23,7 @@
             >
           </div>
           <div class="btns">
-            <a href="javascript:;" class="play">
+            <a href="javascript:;" class="play" @click="setPlaylist(id)">
               <i class="ply"></i>
               <span>播放</span>
             </a>
@@ -119,6 +119,19 @@ export default {
       day = day < 10 ? '0' + day : '' + day
       return month + '月' + day + '日'
     },
+
+    // 播放歌单
+    async setPlaylist(id) {
+      let result = await this.$api.reqPlayList(id, localStorage.getItem('CCOKIE'))
+      let ids = [];
+      result.playlist.trackIds.forEach(item => {
+        ids.push(item.id)
+      })
+      await this.$store.dispatch('music/setMusicNow', ids[0])
+      ids = ids.join(',')
+      await this.$store.dispatch('music/setMusicList', ids)
+      this.$bus.$emit('play')
+    }
   },
 }
 </script>

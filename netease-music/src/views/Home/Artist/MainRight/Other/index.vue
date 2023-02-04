@@ -7,18 +7,18 @@
         <li class="singer" v-for="item in artistList" :key="item.id">
           <div class="cover">
             <img v-lazy="item.img1v1Url" />
-            <a
-              href="javascript:;"
+            <router-link
+               :to="{path:'/artist',query:{id:`${item.id}`}}"
               class="mask"
               :title="item.name + '的音乐'"
-            ></a>
+            ></router-link>
           </div>
           <p class="dec">
-            <a
-              href="javascript:;"
+            <router-link
+               :to="{path:'/artist',query:{id:`${item.id}`}}"
               class="clearfix"
               :title="item.name + '的音乐'"
-              >{{ item.name }}</a
+              >{{ item.name }}</router-link
             >
             <i class="pointer"></i>
           </p>
@@ -54,18 +54,18 @@
         >
           <div class="cover">
             <img v-lazy="item.img1v1Url" />
-            <a
-              href="javascript:;"
+            <router-link
+               :to="{path:'/artist',query:{id:`${item.id}`}}"
               class="mask"
               :title="item.name + '的音乐'"
-            ></a>
+            ></router-link>
           </div>
           <p class="dec">
-            <a
-              href="javascript:;"
+            <router-link
+               :to="{path:'/artist',query:{id:`${item.id}`}}"
               class="clearfix"
               :title="item.name + '的音乐'"
-              >{{ item.name }}</a
+              >{{ item.name }}</router-link
             >
             <i class="pointer"></i>
           </p>
@@ -74,11 +74,11 @@
 
       <ul class="oth clearfix">
         <li class="sml" v-for="item in artistList.slice(10)" :key="item.id">
-          <a
-            href="javascript:;"
+          <router-link
+             :to="{path:'/artist',query:{id:`${item.id}`}}"
             :title="item.name + '的音乐'"
             class="ellipsis"
-            >{{ item.name }}</a
+            >{{ item.name }}</router-link
           >
           &nbsp;
           <i class="pointer"></i>

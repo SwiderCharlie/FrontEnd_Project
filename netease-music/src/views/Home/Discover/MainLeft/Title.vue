@@ -14,7 +14,7 @@
       <span class="line">|</span>
     </div>
     <span class="more">
-      <a href="javascript:;">更多</a>
+      <router-link :to="{path: `/home/${type}`}">更多</router-link>
       <i class="icn-more"></i>
     </span>
   </div>
@@ -23,7 +23,7 @@
 <script>
 export default {
   name: 'Title',
-  props: [ 'title', 'showNav' ]
+  props: [ 'title', 'showNav', 'type' ]
 }
 </script>
 

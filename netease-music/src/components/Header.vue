@@ -98,7 +98,7 @@
           onfocus="this.placeholder=''"
           onblur="this.placeholder='音乐/视频/电台/用户'"
           @focus="isOpenSearch = true"
-          @blur="isOpenSearch = false"
+          @blur="searchBlur"
         />
       </div>
 
@@ -115,7 +115,7 @@
             </h3>
             <ul class="bd">
               <li v-for="item in suggestList.songs" :key="item.id">
-                <a href="javascript:;" class="ellipsis">{{ item.name }}</a>
+                <router-link :to="{path: '/song', query: {id: `${item.id}`}}" class="ellipsis">{{ item.name }}</router-link>
               </li>
             </ul>
           </div>
@@ -126,7 +126,7 @@
             </h3>
             <ul class="bd odd">
               <li v-for="item in suggestList.artists" :key="item.id">
-                <a href="javascript:;" class="ellipsis">{{ item.name }}</a>
+                <router-link :to="{path: '/artist', query: {id: `${item.id}`}}" class="ellipsis">{{ item.name }}</router-link>
               </li>
             </ul>
           </div>
@@ -137,7 +137,7 @@
             </h3>
             <ul class="bd">
               <li v-for="item in suggestList.albums" :key="item.id">
-                <a href="javascript:;" class="ellipsis">{{ item.name }}</a>
+                <router-link :to="{path: '/album', query: {id: `${item.id}`}}" class="ellipsis">{{ item.name }}</router-link>
               </li>
             </ul>
           </div>
@@ -148,7 +148,7 @@
             </h3>
             <ul class="bd odd">
               <li v-for="item in suggestList.playlists" :key="item.id">
-                <a href="javascript:;" class="ellipsis">{{ item.name }}</a>
+                <router-link :to="{path: '/playlist', query: {id: `${item.id}`}}" class="ellipsis">{{ item.name }}</router-link>
               </li>
             </ul>
           </div>
@@ -515,12 +515,19 @@ export default {
       if (path.indexOf('/home') != -1) this.curIndex = 0
       else if (path.indexOf('/my') != -1) this.curIndex = 1
       else if (path.indexOf('/friend') != -1) this.curIndex = 2
+      else this.curIndex = 0
     },
 
     // 获取搜索建议
     async getSearchSuggest() {
       let result = await this.$api.reqSearchSuggest(this.searchText)
       this.suggestList = result.result
+    },
+    
+    searchBlur() {
+      setTimeout(() => {
+        this.isOpenSearch = false
+      }, 100)
     },
 
     // 打开登录窗口
@@ -578,9 +585,10 @@ export default {
             }
             this.isLogin = true
             this.closeLoginBox()  // 关闭登录窗口
+            location.reload()
           }
         } catch (err) {
-          this.$message(err.message)
+          this.$message.error(err.message)
         }
       }, 5000)
     },
@@ -621,7 +629,7 @@ export default {
         this.phoneLoginOrRegister = 'login'  // 切换到手机号登录页面
         this.countryCode = '86'
       } else {  // 没有勾选协议
-        this.$message({
+        this.$message.warning({
           message: '请先勾选同意《服务条款》《隐私政策》《儿童隐私政策》',
         })
       }
@@ -633,7 +641,7 @@ export default {
         this.phoneLoginOrRegister = 'register'  // 切换到手机号注册页面
         this.countryCode = '86'
       } else {  // 没有勾选协议
-        this.$message({
+        this.$message.warning({
           message: '请先勾选同意《服务条款》《隐私政策》《儿童隐私政策》',
         })
       }
@@ -671,7 +679,7 @@ export default {
       }
       let result = await this.$api.reqCaptcha(this.phone, this.countryCode)
       if (result.code !== 200) {
-        this.$message('验证码发送失败，请稍后重试')
+        this.$message.error('验证码发送失败，请稍后重试')
       } else {
         // 获取验证码倒计时
         this.countdownTimer = setInterval(() => {
@@ -724,9 +732,10 @@ export default {
             this.userImg = result2.profile.avatarUrl
             this.isLogin = true
             this.closeLoginBox()
+            location.reload()
           }
         } catch(err) {
-          this.$message(err)
+          this.$message.error(err)
         }
         
       }
@@ -760,6 +769,7 @@ export default {
         this.userImg = result.profile.avatarUrl
         this.isLogin = true
         this.closeLoginBox()
+        location.reload()
       } else {
         this.message = '手机号或密码错误'
       }
@@ -772,7 +782,7 @@ export default {
       this.$store.dispatch("user/logout").then(() => {
         location.reload()
       })
-    }
+    },
   },
 }
 </script>

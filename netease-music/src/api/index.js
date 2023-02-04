@@ -168,12 +168,12 @@ export function reqRadioHot(cateId, limit, offset) {
 // ================== My页面 ==================
 // 获取用户收藏歌手、MV、电台、歌单数量
 export function reqSubcount(cookie) {
-  return request('/user/subcount', 'get', {'cookie': cookie})
+  return request('/user/subcount', 'get', {'cookie': cookie, 'timerstamp': Date.parse(new Date())})
 }
 
 // 获取用户歌单
 export function reqUserPlaylist(uid, cookie) {
-  return request('/user/playlist', 'get', { 'uid': uid, 'cookie': cookie })
+  return request('/user/playlist', 'get', { 'uid': uid, 'cookie': cookie, 'timerstamp': Date.parse(new Date()) })
 }
 
 // 获取用户收藏的歌手列表
@@ -200,4 +200,70 @@ export function reqUserDetail(uid, cookie) {
 // 获取动态消息
 export function reqEvent(pageSize, lastTime, cookie) {
   return request('/event', 'get', { 'pagesize': pageSize, 'lasttime': lastTime, 'cookie': cookie})
+}
+
+// ================== 歌单页面 ==================
+// 获取相关歌单
+export function reqRelatedPlaylist(id) {
+  return request('/related/playlist', 'get', {'id': id})
+}
+
+// 收藏/取消收藏歌单
+// 参数 t：类型 1收藏，2取消收藏
+export function subscribePlaylist(t, id, cookie) {
+  return request('/playlist/subscribe', 'get', {'t': t, 'id': id, 'cookie': cookie})
+}
+
+// ================== 歌手页面 ==================
+// 获取相似歌手
+export function reqSimiArtist(id, cookie) {
+  return request('/simi/artist', 'get', {'id': id, 'cookie': cookie})
+}
+
+// 获取歌手描述
+export function reqArtistDesc(id) {
+  return request('/artist/desc', 'get', {'id': id})
+}
+
+// 获取歌手热门50首歌曲
+export function reqArtistTop50Song(id) {
+  return request('/artist/top/song', 'get', {'id': id})
+}
+
+// 获取歌手专辑
+export function reqArtistAlbums(id, limit, offset) {
+  return request('/artist/album', 'get', { 'id': id, 'limit': limit, 'offset': offset})
+}
+
+// 获取歌手MV
+export function reqArtistMv(id, limit, offset) {
+  return request('/artist/mv', 'get', {'id': id, 'limit': limit, 'offset': offset})
+}
+
+// 关注/取消收藏歌手
+// 参数 t: 1 收藏，其他 取消收藏
+export function artistSub(id, t, cookie) {
+  return request('/artist/sub', 'get', {'id': id, 't': t, 'cookie': cookie})
+}
+
+// ================== 专辑页面 ==================
+// 获取专辑内容
+export function reqAlbum(id) {
+  return request('/album', 'get', {'id': id})
+}
+
+// 获取专辑评论
+export function reqAlbumComments(id, limit, offset) {
+  return request('/comment/album', 'get', {'id': id, 'limit': limit, 'offset': offset})
+}
+
+// ================== 歌曲页面 ==================
+// 获取相似音乐
+export function reqSimiSongs(id) {
+  return request('/simi/song', 'get', {'id': id})
+}
+
+// 获取歌曲评论
+export function reqSongComments(id, limit, offset) {
+  return request('/comment/music', 'get', {'id': id, 'limit': limit, 'offset': offset})
 }

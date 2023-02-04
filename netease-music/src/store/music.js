@@ -27,6 +27,7 @@ export default {
         commit('setMusicNow', result.songs[0]);
       }
     },
+
     // 从本地获取播放列表
     async getMusicList({ commit }) {
       let idList = localStorage.getItem('MUSICLIST');
@@ -35,18 +36,35 @@ export default {
         commit('setMusicList', result.songs);
       }
     },
+
     // 修改当前播放的歌曲
     async setMusicNow({ commit }, id) {
       localStorage.setItem('MUSICNOW', id);
       let result = await reqSongDetail(id);
       commit('setMusicNow', result.songs[0])
     },
+
     // 修改当前播放列表 
     async setMusicList({ commit }, ids) {
       localStorage.setItem('MUSICLIST', ids)
       let result = await reqSongDetail(ids);
       commit('setMusicList', result.songs);
     },
+
+    // 在当前播放列表中添加歌曲
+    addMusic({ dispatch }, id) {
+      let ids = localStorage.getItem('MUSICLIST')
+      if (!ids || ids === '') {
+        ids = id
+      }
+      else {
+        if (ids.indexOf(id) == -1) {
+        ids = id + ',' + ids
+        }
+      }
+      dispatch('setMusicList', ids)
+    },
+
     // 删除播放列表中的歌曲
     delMusic({ dispatch }, id) {
       id = String(id)
@@ -61,6 +79,7 @@ export default {
       let ids = list.join(',');
       dispatch('setMusicList', ids);
     },
+
     // 清空播放列表
     clearList({ commit }) {
       localStorage.removeItem('MUSICLIST')
